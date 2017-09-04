@@ -1,2 +1,2 @@
-# PHPUnit Docker Environment
+# PHPUnit Docker Stack
 
