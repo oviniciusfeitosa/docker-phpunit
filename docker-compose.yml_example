@@ -1,0 +1,41 @@
+version: '2'
+services:
+  database:
+      image: 'mariadb:10.0'
+      container_name: 'database-mariadb-PHPUnitTest'
+      ports:
+        - "3306:3306"
+      environment:
+        - "MYSQL_ROOT_PASSWORD=123456"
+        - "MYSQL_ROOT_HOST=0.0.0.0"
+        - "MYSQL_USER=admin2"
+        - "MYSQL_PASSWORD=123456"
+        - "right=WRITE"
+      volumes:
+        - ./database/mysql/conf.d:/etc/mysql/conf.d
+        - ./database/mysql/mysql.conf.d:/etc/mysql/mysql.conf.d
+        - ./database/mysql/data:/var/lib/mysql
+        - ./database/mysql/log:/var/log/
+  web:
+    image: php:5.6.30-apache
+    container_name: phpweb_PHPUnitTest
+    ports:
+      - "8080:80"
+    volumes:
+      - $PWD:/var/www/html/
+    depends_on:
+      - database
+    links:
+      - database
+    external_links:
+     - database-mariadb-PHPUnitTest:database-dns
+  dependency_manager:
+    image: composer:1.5.1
+    restart: 'no'
+    container_name: 'composer'
+    command: install
+    volumes:
+      - $PWD:/app
+      # Share user and group
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
